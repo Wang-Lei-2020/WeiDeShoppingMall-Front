@@ -4,6 +4,8 @@ import Home from '@/components/Home';
 import Login from "@/components/Login";
 import Register from "@/components/Register";
 import Content from "@/components/Content";
+import Seller from "@/components/Seller";
+//import SellerIndex from "@/components/SellerIndex";
 
 Vue.use(VueRouter)
 
@@ -33,6 +35,11 @@ const routes = [
         path: '/home',
         name: 'Home',
         component: Home
+    },
+    {
+        path: '/seller',
+        name: 'Seller',
+        component: Seller
     }
 ];
 

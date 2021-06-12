@@ -13,7 +13,7 @@ import 'element-ui/lib/theme-chalk/index.css';
 Vue.use(ElementUI);
 Vue.use(VueSession);
 Vue.use(VueAxios, axios);
-// Vue.use(router)
+//Vue.use(router)
 axios.defaults.withCredentials = true
 axios.defaults.baseURL = 'http://localhost:8081'
 // axios.defaults.baseURL = 'http://127.0.0.1:8081'

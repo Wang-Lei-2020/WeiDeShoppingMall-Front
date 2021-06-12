@@ -1,9 +1,7 @@
-# WeiDeShoppingMall-Front
+# book_shop_front
+java EE BookShop 项目前后端分离的前端项目
 
-大三下学期实践课项目
-未得在线商城系统
-开发人：why.js项目组
-框架：VUE + Element UI + vuex等等
+后端项目仓库：https://github.com/MakerHu/book_shop_rear
 
 ## Project setup
 ```
@@ -24,3 +22,6 @@ npm run build
 ```
 npm run lint
 ```
+
+### Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).

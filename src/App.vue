@@ -39,18 +39,21 @@
             background-color="#545c64"
             text-color="#fff"
             active-text-color="#ffd04b">
-          <el-menu-item index="1" style="margin-left: 4%" v-on:click="toHome">
-            <img style="height: 56px;margin-right: 8%" src="./assets/logo.png" alt="logo">无用书城
+          <el-menu-item index="1" style="margin-left: 4%" >
+            <img style="height: 56px;margin-right: 8%" src="./assets/logo.png" alt="logo">未得商城
           </el-menu-item>
-          <el-menu-item index="2" style="margin-left: 4%" v-on:click="toHome">主页</el-menu-item>
+          <el-menu-item index="2" style="margin-left: 4%" v-if="!getSellerType" v-on:click="toHome">主页</el-menu-item>
+          <el-menu-item index="2" style="margin-left: 4%" v-if="getSellerType" v-on:click="toSellerHome">主页</el-menu-item>
           <el-submenu index="3" style="float: right;padding-right: 4%">
             <template slot="title">
               <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
               {{getUsername}}
             </template>
             <el-menu-item index="3-1" v-if="!getLoginState"  v-on:click="toLogin">登录</el-menu-item>
-            <el-menu-item index="3-2" v-if="getLoginState"  v-on:click="onLogout">登出</el-menu-item>
-            <el-menu-item index="3-3" v-on:click="toRegister">注册</el-menu-item>
+            <el-menu-item index="3-2" v-if="!getLoginState" v-on:click="toRegister">注册</el-menu-item>
+<!--  待解决          <el-menu-item index="3-3" v-if="getLoginState" v-on:click="toRegister">修改密码</el-menu-item>-->
+            <el-menu-item index="3-4" v-if="getSellerType" v-on:click="addGood">添加商品</el-menu-item>
+            <el-menu-item index="3-5" v-if="getLoginState" v-on:click="onLogout">注销</el-menu-item>
           </el-submenu>
         </el-menu>
       </el-header>
@@ -72,6 +75,7 @@ export default {
   data() {
     return {
       activeIndex: "1",
+      mark: true
     }
   },
   computed: {
@@ -90,6 +94,13 @@ export default {
       }else{
         return true;
       }
+    },
+    getSellerType: function(){
+      if(localStorage.getItem('type') == null){
+        return false;
+      }else{
+        return true;
+      }
     }
   },
   methods: {
@@ -104,6 +115,12 @@ export default {
       console.log(this.$route.path);
       if (this.$route.path !== "/home") {
         this.$router.push("/home");
+      }
+    },
+    toSellerHome: function(){
+      console.log(this.$route.path);
+      if (this.$route.path !== "/seller") {
+        this.$router.push("/seller");
       }
     },
     toLogin: function () {
@@ -131,15 +148,24 @@ export default {
           });
         }else{
           if(response.data.code == '0'){
+            if(localStorage.getItem('type') != null) {
+              _this.mark = false;
+            }
             let flag = false;
             _this.$store.commit('login', flag);
             localStorage.clear();
             console.log(_this.$route.path);
             _this.$message({
-              message: '登出成功！',
+              message: '注销成功！',
               type: 'success'
             });
-            _this.$router.go(0);
+            if(_this.mark == false) {
+              location.reload();
+              _this.$router.push({name: 'Home', params: {isReload: 'true'}});
+            }
+            else {
+              _this.$router.go(0);
+            }
           }
         }
 
@@ -157,6 +183,14 @@ export default {
         this.$router.push({name:"Register",params:{isReload: 'true'}});
       }
     },
+    addGood: function(){
+      this.$message({
+        message: "添加商品",
+        type: 'success'
+      })
+
+
+    }
 
   }
 }
