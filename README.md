@@ -1,7 +1,7 @@
 # book_shop_front
-java EE BookShop 项目前后端分离的前端项目
+实践课未得在线商城 项目前后端分离的前端项目
 
-后端项目仓库：https://github.com/MakerHu/book_shop_rear
+后端项目仓库：https://github.com/songtingze/WDshoppingmall
 
 ## Project setup
 ```
