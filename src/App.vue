@@ -1,38 +1,28 @@
-<!--<template>-->
-<!--  <div id="app">-->
-<!--    <img alt="Vue logo" src="./assets/logo.png">-->
-<!--    <HelloWorld msg="Welcome to Your Vue.js App"/>-->
-<!--  </div>-->
-<!--</template>-->
-
-<!--<script>-->
-<!--import HelloWorld from './components/HelloWorld.vue'-->
-
-<!--export default {-->
-<!--  name: 'App',-->
-<!--  components: {-->
-<!--    HelloWorld-->
-<!--  }-->
-<!--}-->
-<!--</script>-->
-
-<!--<style>-->
-<!--#app {-->
-<!--  font-family: Avenir, Helvetica, Arial, sans-serif;-->
-<!--  -webkit-font-smoothing: antialiased;-->
-<!--  -moz-osx-font-smoothing: grayscale;-->
-<!--  text-align: center;-->
-<!--  color: #2c3e50;-->
-<!--  margin-top: 60px;-->
-<!--}-->
-<!--</style>-->
-
-
 <template>
   <div id="app">
+
+    <div v-if="photoFlag">
+      <el-dialog
+          title="修改头像"
+          :visible.sync="photoFlag"
+
+          width="40%">
+        <ChangePhoto></ChangePhoto>
+      </el-dialog>
+    </div>
+
+    <div v-if="shopPhotoFlag">
+      <el-dialog
+          title="修改店铺图片"
+          :visible.sync="shopPhotoFlag"
+
+          width="40%">
+        <ChangeShopPhoto></ChangeShopPhoto>
+      </el-dialog>
+    </div>
+
     <el-container>
-      <el-header class="header">
-        <!--                <button v-on:click="testsession">测试session</button>-->
+      <el-header class="header" v-if="$route.meta.tabType">
         <el-menu
             :default-active="activeIndex"
             mode="horizontal"
@@ -43,17 +33,23 @@
             <img style="height: 56px;margin-right: 8%" src="./assets/logo.png" alt="logo">未得商城
           </el-menu-item>
           <el-menu-item index="2" style="margin-left: 4%" v-if="!getSellerType" v-on:click="toHome">主页</el-menu-item>
-          <el-menu-item index="2" style="margin-left: 4%" v-if="getSellerType" v-on:click="toSellerHome">主页</el-menu-item>
-          <el-submenu index="3" style="float: right;padding-right: 4%">
+          <el-menu-item index="3" style="margin-left: 4%" v-if="getSellerType" v-on:click="toSellerHome">我的店铺</el-menu-item>
+          <el-menu-item index="4" style="margin-left: 4%" v-on:click="toForum">论坛</el-menu-item>
+          <el-submenu index="5" style="float: right;padding-right: 4%">
             <template slot="title">
-              <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
+              <el-avatar :src="getPhotoUrl"></el-avatar>
               {{getUsername}}
             </template>
-            <el-menu-item index="3-1" v-if="!getLoginState"  v-on:click="toLogin">登录</el-menu-item>
-            <el-menu-item index="3-2" v-if="!getLoginState" v-on:click="toRegister">注册</el-menu-item>
+            <el-menu-item index="5-1" v-if="!getLoginState"  v-on:click="toLogin">登录</el-menu-item>
+            <el-menu-item index="5-2" v-if="!getLoginState" v-on:click="toRegister">注册</el-menu-item>
 <!--  待解决          <el-menu-item index="3-3" v-if="getLoginState" v-on:click="toRegister">修改密码</el-menu-item>-->
-            <el-menu-item index="3-4" v-if="getSellerType" v-on:click="addGood">添加商品</el-menu-item>
-            <el-menu-item index="3-5" v-if="getLoginState" v-on:click="onLogout">注销</el-menu-item>
+            <el-menu-item index="5-3" v-if="(getLoginState)&(!getSellerType)" v-on:click="toIndex">个人中心</el-menu-item>
+            <el-menu-item index="5-4" v-if="getLoginState" v-on:click="changePhoto">更换头像</el-menu-item>
+            <el-menu-item index="5-5" v-if="(getLoginState)&(getSellerType)" v-on:click="changeShopPhoto">更换店铺图片</el-menu-item>
+            <el-menu-item index="5-6" v-if="(getLoginState)&(!getSellerType)" v-on:click="shoppingCart">购物车</el-menu-item>
+            <el-menu-item index="5-7" v-if="(getLoginState)&(getSellerType)" v-on:click="toShopOrder">商品订单</el-menu-item>
+            <el-menu-item index="5-8" v-if="(getLoginState)&(!getSellerType)" v-on:click="toOrder">我的订单</el-menu-item>
+            <el-menu-item index="5-9" v-if="getLoginState" v-on:click="onLogout">注销</el-menu-item>
           </el-submenu>
         </el-menu>
       </el-header>
@@ -70,12 +66,18 @@
 
 
 <script>
+import ChangePhoto from "@/components/ChangePhoto";
+import ChangeShopPhoto from "@/components/ChangeShopPhoto";
+
 export default {
   name: "App",
+  components:{ChangePhoto,ChangeShopPhoto},
   data() {
     return {
       activeIndex: "1",
-      mark: true
+      mark: true,
+      photoFlag:false,
+      shopPhotoFlag:false,
     }
   },
   computed: {
@@ -101,20 +103,33 @@ export default {
       }else{
         return true;
       }
+    },
+    getPhotoUrl:function(){
+      if(this.getLoginState) {
+        return localStorage.getItem('userPhotoUrl');
+      }
+      else{
+        return "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
+      }
     }
   },
   methods: {
-    testsession: function () {
-      this.axios.get('/login/test').then((response) => {
-        this.msg = response.data;
-      }).catch((response) => {
-        console.log(response);
-      })
-    },
     toHome: function () {
       console.log(this.$route.path);
       if (this.$route.path !== "/home") {
         this.$router.push("/home");
+      }
+    },
+    toShopOrder: function () {
+      console.log(this.$route.path);
+      if (this.$route.path !== "/ShopOrder") {
+        this.$router.push("/ShopOrder");
+      }
+    },
+    toIndex: function () {
+      console.log(this.$route.path);
+      if (this.$route.path !== "/index") {
+        this.$router.push("/index");
       }
     },
     toSellerHome: function(){
@@ -159,16 +174,15 @@ export default {
               message: '注销成功！',
               type: 'success'
             });
-            if(_this.mark == false) {
-              location.reload();
+            if(_this.mark == false) {//商家
               _this.$router.push({name: 'Home', params: {isReload: 'true'}});
             }
-            else {
+            else {//买家
               _this.$router.go(0);
+              _this.$router.push({name: 'Home', params: {isReload: 'true'}});
             }
           }
         }
-
       }).catch(function (response) {
         // 这里是处理错误的回调
         console.log(response)
@@ -183,15 +197,24 @@ export default {
         this.$router.push({name:"Register",params:{isReload: 'true'}});
       }
     },
-    addGood: function(){
-      this.$message({
-        message: "添加商品",
-        type: 'success'
-      })
-
-
+    changePhoto:function(){
+      this.photoFlag = true;
+    },
+    shoppingCart:function(){
+      this.$router.push({name:"member_shoppingCar",params:{isReload: 'true'}});
+    },
+    changeShopPhoto:function(){
+      this.shopPhotoFlag = true;
+    },
+    toOrder: function () {
+      console.log(this.$route.path);
+      if (this.$route.path !== "/order") {
+        this.$router.push("/order");
+      }
+    },
+    toForum: function(){
+      this.$router.push("/forum");
     }
-
   }
 }
 </script>

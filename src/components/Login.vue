@@ -90,9 +90,10 @@ export default {
         // 这里是处理正确的回调
         if (response.data.code == '0') {
           //print("11111");
-          _this.user = response.data.data;
-          localStorage.setItem('username', response.data.data.name);
-          //localStorage.setItem('role', response.data.data.role);
+          _this.user = response.data.data.user;
+          localStorage.setItem('username', response.data.data.user.name);
+          localStorage.setItem('userId',response.data.data.user.id);
+          localStorage.setItem('userPhotoUrl',response.data.data.url);
           let flag = true;
           _this.$store.commit('login', flag);
           _this.$router.push({name: 'Home', params: {isReload: 'true'}});
@@ -121,9 +122,12 @@ export default {
         if (response.data.code == '0') {
           //print("11111");
           _this.user = response.data.data;
-          localStorage.setItem('username', response.data.data.name);
+          localStorage.setItem('username', response.data.data.seller.name);
           localStorage.setItem('type', "商家");
-          //localStorage.setItem('role', response.data.data.role);
+          localStorage.setItem('sellerId',response.data.data.seller.id)
+          localStorage.setItem('userPhotoUrl',response.data.data.url1)
+          localStorage.setItem('shopPhotoUrl',response.data.data.url2)
+
           let flag = true;
           _this.$store.commit('login', flag);
           _this.$router.push({name: 'Seller', params: {isReload: 'true'}});

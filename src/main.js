@@ -1,7 +1,5 @@
 import Vue from 'vue'
 import App from './App.vue'
-
-////////////////////////////////hjhtest
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import router from "@/router";
